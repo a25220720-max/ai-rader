@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # ⚙️ 작전 설정 (비밀 금고에서 안전하게 키를 불러옵니다)
-GEMINI_API_KEY = st.secrets["AIzaSyDEHcmpVBgZrIiz0y2pTEzMeyER4kN4Qxs"]
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
 # 📡 정보 수집조 (심층 데이터 스캐너)
 def gather_intel_pro(ticker_symbol):
