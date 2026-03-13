@@ -42,7 +42,6 @@ def predict_probability_pro(intel_data, ai_key):
     client = genai.Client(api_key=ai_key)
     news_text = "\n".join([f"- {news}" for news in intel_data['news']])
 
-    # 준서 씨가 좋아하셨던 끝장 토론 프롬프트 (안정성 강화)
     prompt = f"""
     당신은 '냉철한 비관론자'와 '합리적 낙관론자'입니다. 
     {intel_data['ticker']}에 대해 끝장 토론을 벌여 현실적인 예측치를 내놓으세요.
@@ -73,7 +72,6 @@ def predict_probability_pro(intel_data, ai_key):
     (리스크 관리를 포함한 가이드)
     """
     try:
-        # 엔진 부하를 줄이기 위해 2.5-flash 사용 (토론 내용은 그대로!)
         response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
         return response.text
     except Exception as e:
@@ -95,6 +93,8 @@ if st.button("🚀 냉정한 레이더 가동"):
             
             if final_report == "OVERLOAD":
                 st.warning("⚠️ 서버 과열! 1분만 기다렸다가 다시 눌러주세요.")
+            elif "AI 오류" in final_report:
+                st.error("API 키 문제나 서버 에러가 발생했습니다. 키 설정을 다시 확인해주세요.")
             else:
                 start_idx = final_report.find("[PRICE_START]"); end_idx = final_report.find("[PRICE_END]")
                 if start_idx != -1 and end_idx != -1:
@@ -117,7 +117,6 @@ if st.button("🚀 냉정한 레이더 가동"):
                         ax.plot(past_dates, past_prices, color='#5D6D7E', label='History')
                         ax.plot(f_dates, sim_p, color='#CA6F1E', label='Forecast')
                         
-                        # 최저점(별) 표시 추가!
                         min_p = min(future_prices); buy_d = x_f[future_prices.index(min_p)]
                         ax.scatter(buy_d, min_p, color='#27AE60', s=250, marker='*', zorder=10, label='BUY')
                         
