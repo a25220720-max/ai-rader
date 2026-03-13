@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ⚙️ 작전 설정 (준서 씨 전용 API 키 장착)
-GEMINI_API_KEY = "AIzaSyA7hUSq_5FgAESEH-hjjEd-EhK2ilYcKf4"
+GEMINI_API_KEY = "AIzaSyCRpJwppWimK97OAhBQP85TkXN67aGHfxo"
 
 # 📡 정보 수집조 (장기 데이터 스캐너)
 def gather_intel_pro(ticker_symbol):
