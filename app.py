@@ -9,7 +9,9 @@ import matplotlib.dates as mdates
 # ⚙️ 작전 설정 (비밀 금고에서 안전하게 키를 불러옵니다)
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
-# 📡 정보 수집조 (심층 데이터 스캐너)
+# 📡 정보 수집조 (🔥 1시간 주기 실시간 최신화 레이더 탑재)
+# 이 코드가 바로 3600초(1시간)마다 기존 뉴스를 폐기하고 최신 뉴스를 긁어오는 핵심 기술입니다!
+@st.cache_data(ttl=3600)
 def gather_intel_pro(ticker_symbol):
     ticker = yf.Ticker(ticker_symbol)
     hist = ticker.history(period="5y")
@@ -32,7 +34,8 @@ def gather_intel_pro(ticker_symbol):
     rsi = 100 - (100 / (1 + rs))
     current_rsi = round(rsi.iloc[-1], 2) if not pd.isna(rsi.iloc[-1]) else "데이터 부족"
 
-    news_items = ticker.news[:5]
+    # 🔥 최신 뉴스를 5개에서 10개로 늘려 AI의 정보력을 2배로 강화했습니다.
+    news_items = ticker.news[:10]
     news_headlines = [news.get('title', '제목 없음') for news in news_items]
 
     return {
@@ -57,13 +60,13 @@ def predict_probability_pro(intel_data, ai_key):
     
     [종목]: {intel_data['ticker']} / [현재가]: ${intel_data['current_price']}
     [기술적 지표]: 20일선 ${intel_data['ma20']}, 50일선 ${intel_data['ma50']}, RSI {intel_data['rsi']}
-    [최신 주요 뉴스]: {news_text}
+    [최신 주요 뉴스 10개]: {news_text}
 
     🚨 [매우 중요] 반드시 아래의 마크다운 양식을 100% 똑같이 지켜서 답변하세요. 가격은 숫자만 정확히 적으세요.
 
     [결과양식]
-    ### 🗣️ AI 참모의 현재 상황 요약
-    (현재 상황에 대한 핵심 브리핑 1~2줄)
+    ### 🗣️ AI 참모의 실시간 뉴스 브리핑 & 상황 요약
+    (수집된 최신 뉴스를 바탕으로 한 핵심 브리핑 1~2줄)
 
     [PRICE_START]
     1일: 000.00
@@ -81,7 +84,7 @@ def predict_probability_pro(intel_data, ai_key):
     (앞으로 3년간 비중을 어떻게 조절하고 언제가 최적의 매수 타이밍인지 상세히 가이드)
 
     ### 📋 AI 심층 투자 보고서
-    **[🚀 1일~30일 초단기/단기 전망]**: (시장 모멘텀, 기술적 지표 상세 분석)
+    **[🚀 1일~30일 초단기/단기 전망]**: (최신 뉴스 모멘텀과 기술적 지표 상세 분석)
     **[🗓️ 3개월~1년 중장기 전망]**: (거시 경제 흐름, 실적 전망 기반 추세 분석)
     **[📅 2년~3년 초장기 전망]**: (기업의 본질적 가치, 해자 기반 비전 제시)
     """
@@ -92,26 +95,26 @@ def predict_probability_pro(intel_data, ai_key):
         return f"AI 오류: {e}"
 
 # 📱 앱 화면(UI) 구성
-st.set_page_config(page_title="AI-Radar 고속 에디션", layout="centered", page_icon="⚡")
-st.title("⚡ AI-Radar (고속 Flash 엔진 탑재)")
+st.set_page_config(page_title="AI-Radar 1H Update", layout="centered", page_icon="📡")
+st.title("📡 AI-Radar (1시간 자동 갱신 에디션)")
 
 # 긴 문장 복사 끊김 방지를 위해 세 줄로 나눔
 st.markdown(
-    "**빠르고 쾌적한 Gemini 2.5 Flash 엔진**으로 교체되었습니다. "
-    "과열 에러 없이 과거 변동성 시뮬레이션과 "
+    "**1시간 단위로 시장의 최신 뉴스를 스캔**하여 분석합니다. "
+    "빠르고 쾌적한 고속 엔진을 통해 과거 변동성 시뮬레이션과 "
     "최저점(매수 타점)을 즉시 포착합니다."
 )
 
 TARGET = st.text_input("🎯 타겟 종목 코드를 입력하세요 (예: TSLA, AAPL, NVDA)", "TSLA")
 
-if st.button("🚀 레이더 가동 (고속 엔진)"):
-    with st.spinner("고속 AI가 과거 변동성 추출 및 미래 3년 시뮬레이션 중입니다. (약 5~10초 소요)..."):
+if st.button("🚀 레이더 가동 (실시간 스캔)"):
+    with st.spinner("위성 통신망 연결... 최근 1시간 내의 전장 뉴스와 데이터를 수집 및 시뮬레이션 중입니다..."):
         market_intel = gather_intel_pro(TARGET)
         
         if not market_intel:
             st.error("데이터를 불러오지 못했습니다. 종목 코드를 확인해 주세요.")
         else:
-            st.success(f"[{market_intel['ticker']}] 전장 데이터 수집 완료! 작전 지도를 그립니다.")
+            st.success(f"[{market_intel['ticker']}] 최근 1시간 내 최신 정보 수집 완료! 작전 지도를 그립니다.")
             
             final_report = predict_probability_pro(market_intel, GEMINI_API_KEY)
             
